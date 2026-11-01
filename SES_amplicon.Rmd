@@ -1,0 +1,213 @@
+---
+title: "R notebook"
+output: 
+  html_document:
+    keep_md: true
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    code_folding: hide
+    number_sections: true
+    theme: cosmo
+
+knit: (function(input_file, encoding) {
+  out_dir <- 'docs';
+  rmarkdown::render(input_file,
+ encoding=encoding,
+ output_file=file.path(dirname(input_file), out_dir, 'index.html'))})
+---
+
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+## How to use this file
+
+- Gray boxes are **code chunks**. Click the green ▶ arrow in the top-right corner of a chunk to run it.
+- The results appear right under the chunk.
+- Text after a `#` is a **comment**. R ignores it; it's a note for you.
+- R is case sensitive: `Temperature` and `temperature` are different.
+- Run the chunks in order, top to bottom.
+
+##  Install and load packages
+
+First job is to install and load the packages that we are going to use today. A very useful package that many people use in R is tidyverse. It contains many useful tools such as dyplr for data wrangling, ggplot for making figures etc. If you'd like to read more about what is available in this package, please see: https://www.tidyverse.org/
+
+```{r, eval=FALSE}
+install.packages("tidyverse")
+```
+
+Load the package every time you open R:
+
+```{r}
+library(tidyverse)
+```
+
+# Data loading 
+### data
+This amplicon data came from the Fuhrman lab. Here is the [paper describing it](https://www.nature.com/articles/s41597-025-05423-9). 
+
+
+```{r}
+amplicon <- read_csv("/Users/oliviaahern/Downloads/amplicon-plotting/data/amplicon_data.csv")
+```
+
+You should now see `amplicon` in the **Environment** panel (top right).
+
+### Look at the data
+
+The first 6 rows:
+
+```{r}
+head(amplicon)
+```
+
+How many rows and columns?
+
+```{r}
+nrow(amplicon)
+ncol(amplicon)
+```
+
+The column names:
+
+```{r}
+names(amplicon)
+```
+
+Use `$` to grab one column. `unique()` shows each value once:
+
+```{r}
+unique(amplicon$cruise)
+```
+
+**Each row is one ASV (one 16S/18S sequence) in one sample.** So each sample has many rows.
+
+**Questions:**
+
+1. How many rows are in the dataset?
+2. What cruises are there?
+
+## Get distinct info
+
+To plot sample locations, we only want one row per sample. `distinct()` keeps unique combinations of the columns we list.
+
+```{r}
+samples <- distinct(amplicon, SampleID, cruise, lat, lon, depth, Temperature, Salinity, Season)
+samples
+```
+
+# Your first plot
+
+Every ggplot has the same 3 parts:
+
+1. `ggplot(data, aes(x = ..., y = ...))`: which data, and which columns go on each axis.
+2. `+ geom_...()`: what kind of plot (points, bars, lines).
+3. `+ labs()` (optional): axis labels.
+
+Where were the samples collected?
+
+```{r}
+ggplot(samples, aes(x = lon, y = lat)) +
+  geom_point()
+```
+
+Now color the points by cruise and add labels:
+
+```{r}
+ggplot(samples, aes(x = lon, y = lat, color = cruise)) +
+  geom_point() +
+  labs(x = "Longitude", y = "Latitude", color = "Cruise")
+```
+
+### Color resources
+
+Colors in plots are really important to understanding the data.
+
+- [R package called khroma](https://cran.r-project.org/web/packages/khroma/vignettes/khroma.html)
+- [same colors if you code in python](https://tol-colors.readthedocs.io/en/latest/colorsets.html)
+- [some more r colorblind palettes](https://siegal.bio.nyu.edu/color-palette/)
+- [some info on color theory](https://jfly.uni-koeln.de/color/)
+
+
+### Temperature vs. depth
+
+`scale_y_reverse()` flips the y-axis so the surface is at the top, like the ocean.
+
+```{r}
+ggplot(samples, aes(x = Temperature, y = depth)) +
+  geom_point() +
+  scale_y_reverse() +
+  labs(x = "Temperature (°C)", y = "Depth (m)")
+```
+
+### Who is there?
+
+`geom_col()` makes bars. Each bar is one sample, and the colors show which phyla are in it.
+
+`facet_wrap()` makes a separate panel for each sequence type.
+
+```{r}
+ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Phylum)) +
+  geom_col() +
+  facet_wrap(~ Sequence_Type) +
+  labs(x = "Sample", y = "Relative abundance")
+```
+
+**Questions:**
+
+1. Which phylum is most abundant?
+2. Do all the samples look the same?
+
+### Just one cruise
+
+`filter()` keeps only the rows that match a condition. `==` means "is equal to."
+
+```{r}
+one_cruise <- filter(amplicon, cruise == "POTATOE")
+```
+
+Now make the same stacked bar plot with only that cruise:
+
+```{r}
+ggplot(one_cruise, aes(x = SampleID, y = Relative_Abundance, fill = Phylum)) +
+  geom_col() +
+  facet_wrap(~ Sequence_Type) +
+  labs(x = "Sample", y = "Relative abundance", title = "POTATOE cruise")
+```
+
+## Activities
+
+Replace each `___` with a column name, then click ▶.
+
+**1.** Plot salinity (x) vs. temperature (y) using the `samples` data.
+
+```{r, error=TRUE}
+ggplot(samples, aes(x = ___, y = ___)) +
+  geom_point()
+```
+
+**2.** Take your plot from #1 and color the points by `Season`.
+
+```{r, error=TRUE}
+ggplot(samples, aes(x = Salinity, y = Temperature, color = ___)) +
+  geom_point()
+```
+
+**3.** Remake the bar plot from section 8, but fill by `Class` instead of `Phylum`.
+
+```{r, error=TRUE}
+ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = ___)) +
+  geom_col() +
+  facet_wrap(~ Sequence_Type) +
+  labs(x = "Sample", y = "Relative abundance")
+```
+
+
+# Misc
+
+Other cool microbiome resources include:
+
+- [The Microbe Atlas](https://www.microbeatlas.org/taxon?taxon_id=90_10)
