@@ -412,13 +412,44 @@ species_per_sample
 # you can add this to your amplicon dataset
 # remember the column name we added though is n_species
 amplicon <- left_join(amplicon, species_per_sample, by = "SampleID")
+```
 
+lets look at a barplot of the number of species per sample 
+
+
+
+``` r
+ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Number of ASVs")
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
+
+and we can again facet it, lets try with season
+
+
+``` r
+ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Number of ASVs") +
+  facet_wrap (~Season, scales='free')
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+
+#### plotting against environmental factors
+
+
+
+``` r
 ggplot(amplicon, aes(x = Temperature, y = n_species)) +
   geom_point() +
   labs(x = "Temperature (°C)", y = "Number of ASVs")
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 
 and color it by season 
@@ -436,7 +467,8 @@ ggplot(amplicon, aes(x = Temperature, y = n_species, fill=Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+
 
 We can also look at how the number of species changes with DOC, or dissolved organic carbon.
 
@@ -444,13 +476,25 @@ We can also look at how the number of species changes with DOC, or dissolved org
 ``` r
 ggplot(amplicon, aes(x = DOC, y = n_species)) +
   geom_point(pch=21, size=4) +
-  labs(x = "Temperature (°C)", y = "Number of ASVs") +
+  labs(x = "Dissolved organic carbon", y = "Number of ASVs") +
   theme(legend.position ='bottom') 
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
 
+
+We can also look at how the number of species changes with light or PAR
+
+
+``` r
+ggplot(amplicon, aes(x = PAR, y = n_species)) +
+  geom_point(pch=21, size=4) +
+  labs(x = "PAR", y = "Number of ASVs") +
+  theme(legend.position ='bottom') 
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 
 # Misc
@@ -506,7 +550,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons(4))
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 
 look at this vignette for more colors
@@ -528,7 +572,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 or you can manually assign colors to each season
 
@@ -543,7 +587,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 
 ## ggplot themes
@@ -559,7 +603,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   theme_classic()
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 you can also increase the font all aorund using this theme option 
 
@@ -571,4 +615,4 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   theme_classic(base_size = 14)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-36-1.png)<!-- -->

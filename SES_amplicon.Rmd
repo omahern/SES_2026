@@ -20,7 +20,7 @@ knit: (function(input_file, encoding) {
 
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE, dpi = 300)
 ```
 
 ## How to use this file
@@ -244,10 +244,38 @@ species_per_sample <- amplicon %>%
   summarise(n_species = n_distinct(Species, na.rm = TRUE))
 
 species_per_sample
-
 # you can add this to your amplicon dataset
 # remember the column name we added though is n_species
 amplicon <- left_join(amplicon, species_per_sample, by = "SampleID")
+
+
+```
+
+lets look at a barplot of the number of species per sample 
+
+
+```{r}
+ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Number of ASVs")
+
+```
+
+
+and we can again facet it, lets try with season
+
+```{r}
+ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Number of ASVs") +
+  facet_wrap (~Season, scales='free')
+
+```
+
+#### plotting against environmental factors
+
+
+```{r}
 
 ggplot(amplicon, aes(x = Temperature, y = n_species)) +
   geom_point() +
@@ -270,17 +298,28 @@ ggplot(amplicon, aes(x = Temperature, y = n_species, fill=Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
+
 We can also look at how the number of species changes with DOC, or dissolved organic carbon.
 
 ```{r}
 
 ggplot(amplicon, aes(x = DOC, y = n_species)) +
   geom_point(pch=21, size=4) +
-  labs(x = "Temperature (°C)", y = "Number of ASVs") +
+  labs(x = "Dissolved organic carbon", y = "Number of ASVs") +
   theme(legend.position ='bottom') 
 ```
 
 
+
+We can also look at how the number of species changes with light or PAR
+
+```{r}
+
+ggplot(amplicon, aes(x = PAR, y = n_species)) +
+  geom_point(pch=21, size=4) +
+  labs(x = "PAR", y = "Number of ASVs") +
+  theme(legend.position ='bottom') 
+```
 
 
 # Misc
