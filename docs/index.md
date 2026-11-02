@@ -6,7 +6,7 @@ output:
     toc: true
     toc_float: true
     toc_depth: 4
-    code_folding: hide
+   # code_folding: hide
     number_sections: true
     theme: cosmo
 
@@ -226,15 +226,6 @@ ggplot(samples, aes(x = lon, y = lat, color = cruise)) +
 
 ![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-10-1.png)<!-- -->
 
-### Color resources
-
-Colors in plots are really important to understanding the data.
-
-- [R package called khroma](https://cran.r-project.org/web/packages/khroma/vignettes/khroma.html)
-- [same colors if you code in python](https://tol-colors.readthedocs.io/en/latest/colorsets.html)
-- [some more r colorblind palettes](https://siegal.bio.nyu.edu/color-palette/)
-- [some info on color theory](https://jfly.uni-koeln.de/color/)
-
 
 ### Temperature vs. depth
 
@@ -254,17 +245,57 @@ ggplot(samples, aes(x = Temperature, y = depth)) +
 
 `geom_col()` makes bars. Each bar is one sample, and the colors show which phyla are in it.
 
-`facet_wrap()` makes a separate panel for each sequence type.
 
 
 ``` r
-ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Phylum)) +
+ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
   geom_col() +
-  facet_wrap(~ Sequence_Type) +
   labs(x = "Sample", y = "Relative abundance")
 ```
 
 ![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-12-1.png)<!-- -->
+
+change the legend position
+
+``` r
+ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
+  geom_col() +
+  labs(x = "Sample", y = "Relative abundance") + 
+  theme(legend.position = 'bottom')
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-13-1.png)<!-- -->
+
+`facet_wrap()` makes a separate panel for each sequence type.
+change the legend position
+
+``` r
+ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
+  geom_col() +
+  labs(x = "Sample", y = "Relative abundance") + 
+  facet_wrap (~Longhurst_Long) +
+  theme(legend.position = 'bottom')
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+
+turn off legend for large datasets
+
+
+`facet_wrap()` makes a separate panel for each sequence type.
+change the legend position
+
+``` r
+ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
+  geom_col() +
+  labs(x = "Sample", y = "Relative abundance") + 
+  facet_wrap (~Longhurst_Long) +
+  theme(legend.position = 'none')
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-15-1.png)<!-- -->
+
+
 
 **Questions:**
 
@@ -290,7 +321,7 @@ ggplot(one_cruise, aes(x = SampleID, y = Relative_Abundance, fill = Phylum)) +
   labs(x = "Sample", y = "Relative abundance", title = "POTATOE cruise")
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-14-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-17-1.png)<!-- -->
 
 ## Activities
 
@@ -341,8 +372,203 @@ ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = ___)) +
 ```
 
 
+
+
+# looking at diversity metrics 
+
+### alpha diversity
+Alpha diversity looks at how many species are in a sample. different metrics include
+
+- species number - the number of species per sample. 
+- evenness - how even is the community? Is it dominated by a single species? Ranges from 1 (every species is in equal proportion) to 0 (dominated by a single species)
+
+
+``` r
+species_per_sample <- amplicon %>%
+  group_by(SampleID) %>%
+  summarise(n_species = n_distinct(Species, na.rm = TRUE))
+
+species_per_sample
+```
+
+```
+## # A tibble: 1,105 × 2
+##    SampleID                              n_species
+##    <chr>                                     <int>
+##  1 3335-FRAM-bactV4V5-EGC-3-1plus2-S1           69
+##  2 3336-FRAM-bactV4V5-EGC-3-3plus4-S2           93
+##  3 3337-FRAM-bactV4V5-EGC-3-5plus6-S3           59
+##  4 3338-FRAM-bactV4V5-EGC-3-7plus8-S4           66
+##  5 3339-FRAM-bactV4V5-EGC-3-9plus10-S5          84
+##  6 3340-FRAM-bactV4V5-EGC-3-11plus12-S6         68
+##  7 3341-FRAM-bactV4V5-EGC-3-13plus14-S7         99
+##  8 3342-FRAM-bactV4V5-EGC-3-15plus16-S8         78
+##  9 3343-FRAM-bactV4V5-EGC-3-17plus18-S9         86
+## 10 3344-FRAM-bactV4V5-EGC-3-19plus20-S10        91
+## # ℹ 1,095 more rows
+```
+
+``` r
+# you can add this to your amplicon dataset
+# remember the column name we added though is n_species
+amplicon <- left_join(amplicon, species_per_sample, by = "SampleID")
+
+ggplot(amplicon, aes(x = Temperature, y = n_species)) +
+  geom_point() +
+  labs(x = "Temperature (°C)", y = "Number of ASVs")
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-21-1.png)<!-- -->
+
+
+and color it by season 
+
+
+``` r
+color_seasons = c("Autumn" = 'orange', 
+                  "Spring" = "forestgreen", 
+                  "Summer" = 'red',
+                  "Winter" = 'navy')
+ggplot(amplicon, aes(x = Temperature, y = n_species, fill=Season)) +
+  geom_point(pch=21, size=4) +
+  labs(x = "Temperature (°C)", y = "Number of ASVs") +
+  theme(legend.position ='bottom') +
+  scale_fill_manual(values=color_seasons)
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-22-1.png)<!-- -->
+
+We can also look at how the number of species changes with DOC, or dissolved organic carbon.
+
+
+``` r
+ggplot(amplicon, aes(x = DOC, y = n_species)) +
+  geom_point(pch=21, size=4) +
+  labs(x = "Temperature (°C)", y = "Number of ASVs") +
+  theme(legend.position ='bottom') 
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-23-1.png)<!-- -->
+
+
+
+
 # Misc
 
 Other cool microbiome resources include:
 
 - [The Microbe Atlas](https://www.microbeatlas.org/taxon?taxon_id=90_10)
+
+
+## Color resources
+
+Colors in plots are really important to understanding the data.
+
+- [R package called khroma](https://cran.r-project.org/web/packages/khroma/vignettes/khroma.html)
+- [same colors if you code in python](https://tol-colors.readthedocs.io/en/latest/colorsets.html)
+- [some more r colorblind palettes](https://siegal.bio.nyu.edu/color-palette/)
+- [some info on color theory](https://jfly.uni-koeln.de/color/)
+- [I want hue](https://medialab.github.io/iwanthue/)
+
+### plotting with different colors
+
+If I want to plot the cruises sampled by color, how many colors do I need?
+
+``` r
+(unique(samples$Season))
+```
+
+```
+## [1] "Summer" "Autumn" "Spring" "Winter"
+```
+
+
+4 seasons = 4 colors
+
+
+
+``` r
+install.packages("khroma")
+```
+
+
+``` r
+library(khroma)
+# pick 4 colors
+color_seasons=color("vibrant")
+```
+
+
+``` r
+ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
+  geom_point(pch=21,size=4) +
+  labs(x = "Longitude", y = "Latitude", color = "Season") +
+  scale_fill_manual(values=color_seasons(4))
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+
+
+look at this vignette for more colors
+
+``` r
+vignette("tol")
+```
+
+### making your own color palette 
+
+say you don't like those colors and have specific in mind. you can do two things.
+
+
+``` r
+color_seasons = c("orange", 'forestgreen', 'red', 'navy')
+ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
+  geom_point(pch=21,size=4) +
+  labs(x = "Longitude", y = "Latitude", color = "Season") +
+  scale_fill_manual(values=color_seasons)
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
+
+or you can manually assign colors to each season
+
+``` r
+color_seasons = c("Autumn" = 'orange', 
+                  "Spring" = "forestgreen", 
+                  "Summer" = 'red',
+                  "Winter" = 'navy')
+ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
+  geom_point(pch=21,size=4) +
+  labs(x = "Longitude", y = "Latitude", color = "Season") +
+  scale_fill_manual(values=color_seasons)
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+
+
+## ggplot themes
+
+you can make your plots look different by changing the "theme". Look at this [webpage](https://ggplot2.tidyverse.org/reference/ggtheme.html) for options.
+
+
+``` r
+ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
+  geom_point(pch=21,size=4) +
+  labs(x = "Longitude", y = "Latitude", color = "Season") +
+  scale_fill_manual(values=color_seasons) + 
+  theme_classic()
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+
+you can also increase the font all aorund using this theme option 
+
+``` r
+ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
+  geom_point(pch=21,size=4) +
+  labs(x = "Longitude", y = "Latitude", color = "Season") +
+  scale_fill_manual(values=color_seasons) + 
+  theme_classic(base_size = 14)
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-32-1.png)<!-- -->

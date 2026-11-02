@@ -6,7 +6,7 @@ output:
     toc: true
     toc_float: true
     toc_depth: 4
-    code_folding: hide
+   # code_folding: hide
     number_sections: true
     theme: cosmo
 
@@ -313,8 +313,12 @@ If I want to plot the cruises sampled by color, how many colors do I need?
 4 seasons = 4 colors
 
 
-```{r}
+```{r, eval=FALSE}
 install.packages("khroma")
+
+```
+
+```{r}
 library(khroma)
 # pick 4 colors
 color_seasons=color("vibrant")
