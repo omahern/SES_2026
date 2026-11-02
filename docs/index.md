@@ -50,6 +50,8 @@ library(tidyverse)
 This amplicon data came from the Fuhrman lab. Here is the [paper describing it](https://www.nature.com/articles/s41597-025-05423-9). 
 
 
+This is the path to my data. PLEASE EDIT 
+
 
 ``` r
 amplicon <- read_csv("/Users/oliviaahern/Downloads/amplicon-plotting/data/amplicon_data.csv")
@@ -299,7 +301,7 @@ ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
 
 **Questions:**
 
-1. Which phylum is most abundant?
+1. Which Domain is most abundant?
 2. Do all the samples look the same?
 
 ### Just one cruise
@@ -315,7 +317,7 @@ Now make the same stacked bar plot with only that cruise:
 
 
 ``` r
-ggplot(one_cruise, aes(x = SampleID, y = Relative_Abundance, fill = Phylum)) +
+ggplot(one_cruise, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
   geom_col() +
   facet_wrap(~ Sequence_Type) +
   labs(x = "Sample", y = "Relative abundance", title = "POTATOE cruise")
@@ -355,14 +357,15 @@ ggplot(samples, aes(x = Salinity, y = Temperature, color = ___)) +
 ##                                                                 ^
 ```
 
-**3.** Remake the bar plot from section 8, but fill by `Class` instead of `Phylum`.
+**3.** Remake the bar plot from section 8, but fill by `Class` instead of `Domain`.
 
 
 ``` r
 ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = ___)) +
   geom_col() +
   facet_wrap(~ Sequence_Type) +
-  labs(x = "Sample", y = "Relative abundance")
+  labs(x = "Sample", y = "Relative abundance") +
+  theme(legend.position='none')
 ```
 
 ```
