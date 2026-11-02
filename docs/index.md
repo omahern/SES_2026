@@ -275,7 +275,7 @@ change the legend position
 ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
   geom_col() +
   labs(x = "Sample", y = "Relative abundance") + 
-  facet_wrap (~Longhurst_Long) +
+  facet_wrap (~Ocean_Basin, scales='free') +
   theme(legend.position = 'bottom')
 ```
 
@@ -284,14 +284,14 @@ ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
 turn off legend for large datasets
 
 
-`facet_wrap()` makes a separate panel for each sequence type.
+`facet_grid()` makes a separate panel for each sequence type.
 change the legend position
 
 ``` r
 ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
   geom_col() +
   labs(x = "Sample", y = "Relative abundance") + 
-  facet_wrap (~Longhurst_Long) +
+  facet_grid (~Ocean_Basin, scales='free') +
   theme(legend.position = 'none')
 ```
 
