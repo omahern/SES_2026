@@ -238,8 +238,13 @@ species_per_sample <- amplicon %>%
 species_per_sample
 # you can add this to your amplicon dataset
 # remember the column name we added though is n_species
-amplicon <- left_join(amplicon, species_per_sample, by = "SampleID")
-
+species_per_sample <- species_per_sample %>%
+  left_join(
+    amplicon %>%
+      select(SampleID, lat, lon, depth, Cruise_ID:Depth_Category) %>%
+      distinct(SampleID, .keep_all = TRUE),
+    by = "SampleID"
+  )
 
 ```
 
@@ -247,7 +252,7 @@ lets look at a barplot of the number of species per sample
 
 
 ```{r}
-ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+ggplot(species_per_sample, aes(x = SampleID, y = n_species)) +
   geom_col() +
   labs(x = "SampleID", y = "Number of ASVs")
 
@@ -257,7 +262,7 @@ ggplot(amplicon, aes(x = SampleID, y = n_species)) +
 and we can again facet it, lets try with season
 
 ```{r}
-ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+ggplot(species_per_sample, aes(x = SampleID, y = n_species)) +
   geom_col() +
   labs(x = "SampleID", y = "Number of ASVs") +
   facet_wrap (~Season, scales='free')
@@ -269,7 +274,7 @@ ggplot(amplicon, aes(x = SampleID, y = n_species)) +
 
 ```{r}
 
-ggplot(amplicon, aes(x = Temperature, y = n_species)) +
+ggplot(species_per_sample, aes(x = Temperature, y = n_species)) +
   geom_point() +
   labs(x = "Temperature (°C)", y = "Number of ASVs")
 
@@ -283,13 +288,40 @@ color_seasons = c("Autumn" = 'orange',
                   "Spring" = "forestgreen", 
                   "Summer" = 'red',
                   "Winter" = 'navy')
-ggplot(amplicon, aes(x = Temperature, y = n_species, fill=Season)) +
+ggplot(species_per_sample, aes(x = Temperature, y = n_species, fill=Season)) +
   geom_point(pch=21, size=4) +
   labs(x = "Temperature (°C)", y = "Number of ASVs") +
   theme(legend.position ='bottom') +
   scale_fill_manual(values=color_seasons)
 ```
 
+
+
+
+```{r}
+
+ggplot(species_per_sample, aes(x = Salinity, y = n_species)) +
+  geom_point() +
+  labs(x = "Salinity", y = "Number of ASVs")
+
+```
+
+
+```{r}
+
+ggplot(species_per_sample, aes(x = lat, y = n_species)) +
+  geom_point() +
+  labs(x = "Latitutude", y = "Number of ASVs")
+
+```
+
+```{r}
+
+ggplot(species_per_sample, aes(x = depth, y = n_species)) +
+  geom_point() +
+  labs(x = "depth", y = "Number of ASVs")
+
+```
 
 #### species evenness
 
@@ -310,7 +342,13 @@ evenness_per_sample <- amplicon %>%
 evenness_per_sample
 # you can add this to your amplicon dataset
 # remember the column name we added though is evenness
-amplicon <- left_join(amplicon, evenness_per_sample, by = "SampleID")
+evenness_per_sample <- evenness_per_sample %>%
+  left_join(
+    amplicon %>%
+      select(SampleID, lat, lon, depth, Cruise_ID:Depth_Category) %>%
+      distinct(SampleID, .keep_all = TRUE),
+    by = "SampleID"
+  )
 
 
 ```
@@ -319,13 +357,25 @@ lets look at a barplot of the evenness per sample
 
 
 ```{r}
-ggplot(amplicon, aes(x = SampleID, y = evenness)) +
+ggplot(evenness_per_sample, aes(x = SampleID, y = evenness)) +
   geom_col() +
-  labs(x = "SampleID", y = "Number of ASVs")
+  labs(x = "SampleID", y = "Evenness")
 
 ```
 
 
+
+```{r}
+color_seasons = c("Autumn" = 'orange', 
+                  "Spring" = "forestgreen", 
+                  "Summer" = 'red',
+                  "Winter" = 'navy')
+ggplot(evenness_per_sample, aes(x = Temperature, y = evenness, fill=Season)) +
+  geom_point(pch=21, size=4) +
+  labs(x = "Temperature (°C)", y = "Species Evenness") +
+  theme(legend.position ='bottom') +
+  scale_fill_manual(values=color_seasons)
+```
 
 # Misc
 

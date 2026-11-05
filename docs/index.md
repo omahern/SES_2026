@@ -389,7 +389,13 @@ species_per_sample
 ``` r
 # you can add this to your amplicon dataset
 # remember the column name we added though is n_species
-amplicon <- left_join(amplicon, species_per_sample, by = "SampleID")
+species_per_sample <- species_per_sample %>%
+  left_join(
+    amplicon %>%
+      select(SampleID, lat, lon, depth, Cruise_ID:Depth_Category) %>%
+      distinct(SampleID, .keep_all = TRUE),
+    by = "SampleID"
+  )
 ```
 
 lets look at a barplot of the number of species per sample 
@@ -397,7 +403,7 @@ lets look at a barplot of the number of species per sample
 
 
 ``` r
-ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+ggplot(species_per_sample, aes(x = SampleID, y = n_species)) +
   geom_col() +
   labs(x = "SampleID", y = "Number of ASVs")
 ```
@@ -409,7 +415,7 @@ and we can again facet it, lets try with season
 
 
 ``` r
-ggplot(amplicon, aes(x = SampleID, y = n_species)) +
+ggplot(species_per_sample, aes(x = SampleID, y = n_species)) +
   geom_col() +
   labs(x = "SampleID", y = "Number of ASVs") +
   facet_wrap (~Season, scales='free')
@@ -422,7 +428,7 @@ ggplot(amplicon, aes(x = SampleID, y = n_species)) +
 
 
 ``` r
-ggplot(amplicon, aes(x = Temperature, y = n_species)) +
+ggplot(species_per_sample, aes(x = Temperature, y = n_species)) +
   geom_point() +
   labs(x = "Temperature (°C)", y = "Number of ASVs")
 ```
@@ -438,7 +444,7 @@ color_seasons = c("Autumn" = 'orange',
                   "Spring" = "forestgreen", 
                   "Summer" = 'red',
                   "Winter" = 'navy')
-ggplot(amplicon, aes(x = Temperature, y = n_species, fill=Season)) +
+ggplot(species_per_sample, aes(x = Temperature, y = n_species, fill=Season)) +
   geom_point(pch=21, size=4) +
   labs(x = "Temperature (°C)", y = "Number of ASVs") +
   theme(legend.position ='bottom') +
@@ -488,7 +494,13 @@ evenness_per_sample
 ``` r
 # you can add this to your amplicon dataset
 # remember the column name we added though is evenness
-amplicon <- left_join(amplicon, evenness_per_sample, by = "SampleID")
+evenness_per_sample <- evenness_per_sample %>%
+  left_join(
+    amplicon %>%
+      select(SampleID, lat, lon, depth, Cruise_ID:Depth_Category) %>%
+      distinct(SampleID, .keep_all = TRUE),
+    by = "SampleID"
+  )
 ```
 
 lets look at a barplot of the evenness per sample 
@@ -496,14 +508,29 @@ lets look at a barplot of the evenness per sample
 
 
 ``` r
-ggplot(amplicon, aes(x = SampleID, y = evenness)) +
+ggplot(evenness_per_sample, aes(x = SampleID, y = evenness)) +
   geom_col() +
-  labs(x = "SampleID", y = "Number of ASVs")
+  labs(x = "SampleID", y = "Evenness")
 ```
 
 ![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
 
 
+
+
+``` r
+color_seasons = c("Autumn" = 'orange', 
+                  "Spring" = "forestgreen", 
+                  "Summer" = 'red',
+                  "Winter" = 'navy')
+ggplot(evenness_per_sample, aes(x = Temperature, y = evenness, fill=Season)) +
+  geom_point(pch=21, size=4) +
+  labs(x = "Temperature (°C)", y = "Species Evenness") +
+  theme(legend.position ='bottom') +
+  scale_fill_manual(values=color_seasons)
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
 
 # Misc
 
@@ -558,7 +585,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons(4))
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
 
 
 look at this vignette for more colors
@@ -580,7 +607,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
 
 or you can manually assign colors to each season
 
@@ -595,7 +622,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
 
 
 ## ggplot themes
@@ -611,7 +638,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   theme_classic()
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
 
 you can also increase the font all aorund using this theme option 
 
@@ -623,4 +650,4 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   theme_classic(base_size = 14)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
