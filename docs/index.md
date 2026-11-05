@@ -454,6 +454,36 @@ ggplot(species_per_sample, aes(x = Temperature, y = n_species, fill=Season)) +
 ![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-24-1.png)<!-- -->
 
 
+
+
+
+``` r
+ggplot(species_per_sample, aes(x = Salinity, y = n_species)) +
+  geom_point() +
+  labs(x = "Salinity", y = "Number of ASVs")
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-25-1.png)<!-- -->
+
+
+
+``` r
+ggplot(species_per_sample, aes(x = lat, y = n_species)) +
+  geom_point() +
+  labs(x = "Latitutude", y = "Number of ASVs")
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+
+
+``` r
+ggplot(species_per_sample, aes(x = depth, y = n_species)) +
+  geom_point() +
+  labs(x = "depth", y = "Number of ASVs")
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+
 #### species evenness
 
 We are calculating Pielou's evenness. It ranges from 0 (uneven/dominated by a single species) to 1 (completely even/all species in equal proportions)
@@ -513,7 +543,7 @@ ggplot(evenness_per_sample, aes(x = SampleID, y = evenness)) +
   labs(x = "SampleID", y = "Evenness")
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-26-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-29-1.png)<!-- -->
 
 
 
@@ -530,7 +560,33 @@ ggplot(evenness_per_sample, aes(x = Temperature, y = evenness, fill=Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-27-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-30-1.png)<!-- -->
+
+
+## making barplots of specific species
+
+``` r
+rhodos=subset(amplicon, Order=="Rhodobacterales")
+
+ggplot(rhodos, aes(x = SampleID, y = Relative_Abundance)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Relative Abundance")  +
+  ylim(0,.1)
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+
+Is there a relationship between Rhodobacterales and depth?
+
+``` r
+rhodos=subset(amplicon, Order=="Rhodobacterales")
+
+ggplot(rhodos, aes(x = depth, y = Relative_Abundance)) +
+  geom_point() +
+  labs(x = "Depth (m)", y = "Relative Abundance")  
+```
+
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-32-1.png)<!-- -->
 
 # Misc
 
@@ -585,7 +641,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons(4))
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-31-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
 
 
 look at this vignette for more colors
@@ -607,7 +663,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-33-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-38-1.png)<!-- -->
 
 or you can manually assign colors to each season
 
@@ -622,7 +678,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-34-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-39-1.png)<!-- -->
 
 
 ## ggplot themes
@@ -638,7 +694,7 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   theme_classic()
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-35-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-40-1.png)<!-- -->
 
 you can also increase the font all aorund using this theme option 
 
@@ -650,4 +706,4 @@ ggplot(samples, aes(x = lon, y = lat, fill = Season)) +
   theme_classic(base_size = 14)
 ```
 
-![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-36-1.png)<!-- -->
+![](/Users/oliviaahern/Documents/GitHub/SES_2026/docs/index_files/figure-html/unnamed-chunk-41-1.png)<!-- -->

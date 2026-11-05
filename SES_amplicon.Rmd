@@ -377,6 +377,28 @@ ggplot(evenness_per_sample, aes(x = Temperature, y = evenness, fill=Season)) +
   scale_fill_manual(values=color_seasons)
 ```
 
+
+## making barplots of specific species
+```{r}
+rhodos=subset(amplicon, Order=="Rhodobacterales")
+
+ggplot(rhodos, aes(x = SampleID, y = Relative_Abundance)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Relative Abundance")  +
+  ylim(0,.1)
+
+```
+
+Is there a relationship between Rhodobacterales and depth?
+```{r}
+rhodos=subset(amplicon, Order=="Rhodobacterales")
+
+ggplot(rhodos, aes(x = depth, y = Relative_Abundance)) +
+  geom_point() +
+  labs(x = "Depth (m)", y = "Relative Abundance")  
+
+```
+
 # Misc
 
 Other cool microbiome resources include:
