@@ -161,21 +161,8 @@ change the legend position
 ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
   geom_col() +
   labs(x = "Sample", y = "Relative abundance") + 
-  facet_wrap (~Ocean_Basin, scales='free') +
+  facet_wrap (~Cruise_ID, scales='free') +
   theme(legend.position = 'bottom')
-``` 
-
-turn off legend for large datasets
-
-
-`facet_grid()` makes a separate panel for each sequence type.
-change the legend position
-```{r}
-ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
-  geom_col() +
-  labs(x = "Sample", y = "Relative abundance") + 
-  facet_grid (~Ocean_Basin, scales='free') +
-  theme(legend.position = 'none')
 ``` 
 
 
@@ -199,7 +186,7 @@ Now make the same stacked bar plot with only that cruise:
 ggplot(one_cruise, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
   geom_col() +
   facet_wrap(~ Sequence_Type) +
-  labs(x = "Sample", y = "Relative abundance", title = "POTATOE cruise")
+  labs(x = "Sample", y = "Relative abundance", title = "JC053 cruise")
 ```
 
 ## Activities
@@ -304,29 +291,6 @@ ggplot(amplicon, aes(x = Temperature, y = n_species, fill=Season)) +
 ```
 
 
-We can also look at how the number of species changes with DOC, or dissolved organic carbon.
-
-```{r}
-
-ggplot(amplicon, aes(x = DOC, y = n_species)) +
-  geom_point(pch=21, size=4) +
-  labs(x = "Dissolved organic carbon", y = "Number of ASVs") +
-  theme(legend.position ='bottom') 
-```
-
-
-
-We can also look at how the number of species changes with light or PAR
-
-```{r}
-
-ggplot(amplicon, aes(x = PAR, y = n_species)) +
-  geom_point(pch=21, size=4) +
-  labs(x = "PAR", y = "Number of ASVs") +
-  theme(legend.position ='bottom') 
-```
-
-
 #### species evenness
 
 We are calculating Pielou's evenness. It ranges from 0 (uneven/dominated by a single species) to 1 (completely even/all species in equal proportions)
@@ -351,7 +315,16 @@ amplicon <- left_join(amplicon, evenness_per_sample, by = "SampleID")
 
 ```
 
-lets look at a barplot of the number of species per sample 
+lets look at a barplot of the evenness per sample 
+
+
+```{r}
+ggplot(amplicon, aes(x = SampleID, y = evenness)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Number of ASVs")
+
+```
+
 
 
 # Misc
