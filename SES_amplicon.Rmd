@@ -53,7 +53,7 @@ This amplicon data came from the Fuhrman lab. Here is the [paper describing it](
 This is the path to my data. PLEASE EDIT 
 
 ```{r}
-amplicon <- read_csv("/Users/oliviaahern/Downloads/amplicon-plotting/data/amplicon_data.csv")
+amplicon <- read_csv("/Users/oliviaahern/Documents/GitHub/SES_2026/data/amplicon_data.csv")
 ```
 
 You should now see `amplicon` in the **Environment** panel (top right).
@@ -190,7 +190,7 @@ ggplot(amplicon, aes(x = SampleID, y = Relative_Abundance, fill = Domain)) +
 `filter()` keeps only the rows that match a condition. `==` means "is equal to."
 
 ```{r}
-one_cruise <- filter(amplicon, cruise == "POTATOE")
+one_cruise <- filter(amplicon, cruise == "JC053")
 ```
 
 Now make the same stacked bar plot with only that cruise:
@@ -241,6 +241,8 @@ Alpha diversity looks at how many species are in a sample. different metrics inc
 - species number - the number of species per sample. 
 - evenness - how even is the community? Is it dominated by a single species? Ranges from 1 (every species is in equal proportion) to 0 (dominated by a single species)
 
+#### number of species per sample
+
 ```{r}
 species_per_sample <- amplicon %>%
   group_by(SampleID) %>%
@@ -275,7 +277,7 @@ ggplot(amplicon, aes(x = SampleID, y = n_species)) +
 
 ```
 
-#### plotting against environmental factors
+##### plotting against environmental factors
 
 
 ```{r}
@@ -323,6 +325,33 @@ ggplot(amplicon, aes(x = PAR, y = n_species)) +
   labs(x = "PAR", y = "Number of ASVs") +
   theme(legend.position ='bottom') 
 ```
+
+
+#### species evenness
+
+We are calculating Pielou's evenness. It ranges from 0 (uneven/dominated by a single species) to 1 (completely even/all species in equal proportions)
+
+```{r}
+# Pielou's evenness (J) = Shannon diversity / ln(number of species)
+# assumes your counts column is called Abundance -- change it if yours is named differently
+evenness_per_sample <- amplicon %>%
+  filter(!is.na(Species)) %>%
+  group_by(SampleID, Species) %>%
+  summarise(abund = sum(Relative_Abundance), .groups = "drop") %>%
+  filter(abund > 0) %>%
+  group_by(SampleID) %>%
+  mutate(p = abund / sum(abund)) %>%
+  summarise(evenness = -sum(p * log(p)) / log(n()))
+
+evenness_per_sample
+# you can add this to your amplicon dataset
+# remember the column name we added though is evenness
+amplicon <- left_join(amplicon, evenness_per_sample, by = "SampleID")
+
+
+```
+
+lets look at a barplot of the number of species per sample 
 
 
 # Misc
