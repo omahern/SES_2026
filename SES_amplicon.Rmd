@@ -389,13 +389,38 @@ ggplot(rhodos, aes(x = SampleID, y = Relative_Abundance)) +
 
 ```
 
-Is there a relationship between Rhodobacterales and depth?
 ```{r}
 rhodos=subset(amplicon, Order=="Rhodobacterales")
 
-ggplot(rhodos, aes(x = depth, y = Relative_Abundance)) +
-  geom_point() +
-  labs(x = "Depth (m)", y = "Relative Abundance")  
+ggplot(rhodos, aes(x = SampleID, y = Relative_Abundance, fill=Genus)) +
+  geom_col() +
+  labs(x = "SampleID", y = "Relative Abundance")  +
+  ylim(0,.1)
+
+```
+
+
+Is there a relationship between Rhodobacterales and depth?
+```{r}
+rhodos=subset(amplicon, Order=="Rhodobacterales")
+random_color=randomcoloR::randomColor(30, luminosity='bright')
+
+ggplot(rhodos, aes(x = lat, y = Relative_Abundance, fill=Genus)) +
+  geom_point(pch=21, size=4) +
+  scale_fill_manual(values=random_color) +
+  labs(x = "Depth (m)", y = "Relative Abundance") +
+  theme(legend.position='bottom')
+
+
+rhodos=subset(amplicon, Genus=="Sulfitobacter")
+random_color=randomcoloR::randomColor(30, luminosity='bright')
+
+ggplot(rhodos, aes(x = lat, y = Relative_Abundance, fill=Genus)) +
+  geom_point(pch=21, size=4) +
+  scale_fill_manual(values=random_color) +
+  labs(x = "Latitude", y = "Relative Abundance") +
+  theme(legend.position='bottom')
+
 
 ```
 
